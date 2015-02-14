@@ -1,0 +1,5 @@
+twit2gif
+*.pyc
+.DS_Store
+*~
+*.swp
