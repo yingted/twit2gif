@@ -21,3 +21,21 @@ Response:
 	...
 ]
 ```
+#### web
+##### POST /query
+Content type: `application/json`
+Content:
+```js
+{
+	"text": "...",
+}
+```
+Response:
+```js
+{
+	"quote": "...",
+	"url": "...",
+}
+```
+##### GET /render/{id}.gif
+Lazily renders subtitle `id`.
