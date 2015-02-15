@@ -58,8 +58,8 @@ class Server(object):
 		except OSError:
 			pass
 		text_hash = hashlib.sha224(text).hexdigest()
-		#with tempfile.NamedTemporaryFile(suffix='.gif', prefix='render_', dir=self.gif_dir, delete=False) as gif_f:
-		with open(os.path.join(self.gif_dir, 'render_%d_%s.gif' % (subtitle, text_hash)), 'w+b') as gif_f:
+		#with tempfile.NamedTemporaryFile(suffix='.gif', prefix='render_', dir=self.gif_dir, mode='r+b', delete=False) as gif_f:
+		with open(os.path.join(self.gif_dir, 'render_%d_%s.gif' % (subtitle, text_hash)), 'r+b') as gif_f:
 			with flock.Flock(gif_f, flock.LOCK_EX):
 				gif_f.seek(0, 2)
 				size = gif_f.tell()
