@@ -23,7 +23,7 @@ with open("schema.sql") as schema_file:
         cur.executescript(schema_file.read())
 
 def main(mp4, srt):
-    raw_subs = pysrt.open(srt)
+    raw_subs = pysrt.open(srt, encoding='iso-8859-1')
     text_subs = [raw_sub.text for raw_sub in raw_subs]
 
     entities_subs = util.get_paragraph_entities(text_subs)

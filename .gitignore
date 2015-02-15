@@ -5,3 +5,5 @@ twit2gif
 *.swp
 *.db
 *.srt
+movies/
+rendered_gifs/
