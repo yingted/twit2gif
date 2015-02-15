@@ -23,7 +23,7 @@ Response:
 ```
 #### web
 ##### POST /query
-Content type: `application/x-www-form-urlencoded`
+Content type: `application/x-www-form-urlencoded` or `application/json`
 Content:
 ```
 text=...
