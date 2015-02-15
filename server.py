@@ -9,6 +9,7 @@ import tempfile
 import flock
 import subprocess
 import pyshorteners.shorteners
+import pysrt
 
 class Server(object):
 	gif_dir = 'rendered_gifs/'
@@ -41,7 +42,7 @@ class Server(object):
 			subtitle, quote = res[0]
 			ret['quote'] = quote
                         shortener = pyshorteners.shorteners.Shortener('TinyurlShortener')
-                        temp_url = cherrypy.url('/render/%d.gif' % subtitle, '?quote=' + urllib.quote(text.encode('utf-8')))
+                        temp_url = cherrypy.url('/render/%d.gif' % subtitle, 'text=' + urllib.quote(text.encode('utf-8')))
 			#print 'shorten', temp_url
 			ret['url'] = shortener.short(temp_url)
 		return ret
