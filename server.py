@@ -41,7 +41,7 @@ class Server(object):
 			ret['url'] = cherrypy.url('/render.gif?subtitle=%d' % subtitle)
 		return ret
 	@cherrypy.expose
-	@cherrypy.tools.response_headers([('Content-Type', 'image/gif')])
+	@cherrypy.tools.response_headers(headers=[('Content-Type', 'image/gif')])
 	def render(self, gif):
 		if not gif.endswith('.gif'):
 			raise cherrypy.NotFound()
@@ -81,4 +81,5 @@ class Server(object):
 
 if __name__ == '__main__':
 	cherrypy_cors.install()
+	cherrypy.server.socket_host = '0.0.0.0'
 	cherrypy.quickstart(Server())
