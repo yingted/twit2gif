@@ -12,7 +12,7 @@ var querystring = require('querystring');
 var xmlescape = require('xml-escape');
 var request = require('request').forever();
 var xml2js = require('xml2js');
-var utils = require('utils');
+var utils = require('./lib/utils');
 var async = require('async');
 
 // setup middleware
@@ -64,12 +64,12 @@ console.log('service_password = ' + new Array(service_password.length).join("X")
 var auth = 'Basic ' + new Buffer(service_username + ':' + service_password).toString('base64');
 
 // render index page
-app.get('/', function(req, res){
+app.get('/entities', function(req, res){
     res.render('index');
 });
 
 // Handle the form POST containing the text to identify with Watson and reply with the language
-app.post('/', function(req, res){
+app.post('/entities', function(req, res){
   //console.log(req);
   console.log("====================================================REQUEST BODY====================================================");
 
@@ -118,62 +118,6 @@ app.post('/', function(req, res){
 });
 
 
-//=========================================================================MY CODE=====================================================================================
-// render index page
-app.get('/test', function(req, res){
-    res.render('index');
-});
-
-app.post('/test', function(req, res){
-
-  var parts = url.parse(service_url);
-
-  // create the request options from our form to POST to Watson
-  var options = { 
-    host: parts.hostname,
-    port: parts.port,
-    path: parts.pathname,
-    method: 'POST',
-    headers: {
-      'Content-Type'  :'application/x-www-form-urlencoded',
-      'X-synctimeout' : '30',
-      'Authorization' :  auth }
-  };
-
-  // Create a request to POST to Watson
-  var watson_req = https.request(options, function(result) {
-    result.setEncoding('utf-8');
-    var resp_string = '';
-
-    result.on("data", function(chunk) {
-      resp_string += chunk;
-    });
-
-    result.on('end', function() {
-      console.log("=========================================================================================================================");
-      console.log(resp_string);
-      console.log("=========================================================================================================================");
-      console.log(xmlescape(resp_string));
-      console.log("=========================================================================================================================");
-      //return res.send(resp_string);
-      return res.send(xmlescape(resp_string));
-      //return res.render('index',{'xml':xmlescape(resp_string), 'text':req.body.txt})
-    })
-
-  });
-
-  watson_req.on('error', function(e) {
-    return res.render('index', {'error':e.message})
-  });
-
-  // Whire the form data to the service
-  watson_req.write(querystring.stringify(req.body));
-  watson_req.end();
-});
-
-
-
-//=========================================================================MY CODE=====================================================================================
 
 
 
