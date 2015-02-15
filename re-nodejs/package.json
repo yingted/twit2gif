@@ -2,6 +2,9 @@
   "name": "RelationshipExtractionNodejsStarterApp",
   "version": "0.0.1",
   "description": "A sample nodejs app for Bluemix that uses the Relationship Extraction service",
+  "scripts": {
+    "start": "node ./app.js"
+  },
   "dependencies": {
     "async": "^0.9.0",
     "express": "3.4.7",
