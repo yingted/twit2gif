@@ -3,3 +3,5 @@ twit2gif
 .DS_Store
 *~
 *.swp
+*.db
+*.srt
