@@ -39,6 +39,7 @@ var service_url = 'https://gateway.watsonplatform.net/relationship-extraction-be
 var service_username = '11a96023-6294-4cc0-81ed-0fc64d65b88d';
 var service_password = 'p@55w0rd';
 
+
 // VCAP_SERVICES contains all the credentials of services bound to
 // this application. For details of its content, please refer to
 // the document or sample of each service.
