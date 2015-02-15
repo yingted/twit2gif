@@ -23,12 +23,10 @@ Response:
 ```
 #### web
 ##### POST /query
-Content type: `application/json`
+Content type: `application/x-www-form-urlencoded`
 Content:
-```js
-{
-	"text": "...",
-}
+```
+text=...
 ```
 Response:
 ```js

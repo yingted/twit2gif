@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import cherrypy
+import importer
+import util
 class Server(object):
-	def index(self):
+	def query(self):
 		return 'Hello World!'
-	index.exposed = True
+	query.exposed = True
 
 if __name__ == '__main__':
 	cherrypy.quickstart(Server())
