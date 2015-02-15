@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import cherrypy
+import cherrypy_cors
 import importer
 import util
 import os
