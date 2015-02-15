@@ -12,7 +12,7 @@ exports.parseType = function(parse){
           var last = ents.pop();
         }
         token = '';
-      }else if(type==="PRP"){
+      }else if(type==="PRP" || type==="."){
         token='';
       }else {//anything else
         if(NNP) NNP=false;
