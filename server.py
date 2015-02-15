@@ -7,6 +7,7 @@ import os
 import tempfile
 import flock
 import subprocess
+import pyshorteners
 
 class Server(object):
 	gif_dir = 'rendered_gifs/'
@@ -39,7 +40,9 @@ class Server(object):
 		if res:
 			subtitle, quote = res[0]
 			ret['quote'] = quote
-			ret['url'] = cherrypy.url('/render/%d.gif' % subtitle)
+                        shortener = Shortener('GoogleShortener')
+                        temp_url = cherrypy.url('/render/%d.gif' % subtitle)
+			ret['url'] = shortener.short(temp_url)
 		return ret
 	@cherrypy.expose
 	@cherrypy.tools.response_headers(headers=[('Content-Type', 'image/gif')])
