@@ -10,4 +10,4 @@ start_time="$4"
 duration_time="$5"
 ffmpeg=ffmpeg
 command -v "$ffmpeg" &>/dev/null || ffmpeg=avconv
-"$ffmpeg" -ss "$start_time" -i "$input_file" -vf "scale=320:-1,subtitles=$sub_file:force_style='FontName=DejaVu Serif,FontSize=36,Outline=3'" -t "$duration_time" -r 10 -f image2pipe -vcodec ppm - | convert -delay 10 -loop 0 ppm:- gif:"$output_file"
+"$ffmpeg" -ss "$start_time" -i "$input_file" -vf "scale=480:-1,subtitles=$sub_file:force_style='FontName=DejaVu Serif,FontSize=36,Outline=3'" -t "$duration_time" -r 10 -f image2pipe -vcodec ppm - | convert -delay 10 -loop 0 ppm:- gif:"$output_file"
