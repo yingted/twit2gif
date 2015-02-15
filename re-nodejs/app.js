@@ -10,7 +10,11 @@ var https = require('https');
 var url = require('url');
 var querystring = require('querystring');
 var xmlescape = require('xml-escape');
-var request = require('request').forever();
+var CONCURRENCY = 100;
+var request = require('request').forever({
+  minSockets: CONCURRENCY,
+  maxSockets: CONCURRENCY,
+});
 var xml2js = require('xml2js');
 var utils = require('./lib/utils');
 var async = require('async');
@@ -77,7 +81,7 @@ app.post('/entities', function(req, res){
   var paragraphs=req.body;
   
 
-  async.mapLimit(paragraphs, 5, function(paragraph, callback) {
+  async.mapLimit(paragraphs, CONCURRENCY, function(paragraph, callback) {
     request.post({
       url: service_url,
       headers: {
