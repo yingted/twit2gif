@@ -1,3 +1,5 @@
+'use strict';
+
 // app.js
 // This file contains the server side JavaScript code for your application.
 // This sample application uses express as web application framework (http://expressjs.com/),
@@ -8,6 +10,8 @@ var https = require('https');
 var url = require('url');
 var querystring = require('querystring');
 var xmlescape = require('xml-escape');
+var request = require('request').forever();
+var xml2js = require('xml2js');
 
 // setup middleware
 var app = express();
@@ -25,9 +29,9 @@ var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
 // TODO: Get application information and use it in your app.
 
 // defaults for dev outside bluemix
-var service_url = '<service_url>';
-var service_username = '<service_username>';
-var service_password = '<service_password>';
+var service_url = 'https://gateway.watsonplatform.net/relationship-extraction-beta/api';
+var service_username = '11a96023-6294-4cc0-81ed-0fc64d65b88d';
+var service_password = '7QONyWBYcRgt';
 
 // VCAP_SERVICES contains all the credentials of services bound to
 // this application. For details of its content, please refer to
@@ -65,6 +69,35 @@ app.get('/', function(req, res){
 // Handle the form POST containing the text to identify with Watson and reply with the language
 app.post('/', function(req, res){
 
+  request.post({
+    url: service_url,
+    headers: {
+      'X-synctimeout' : '30',
+      'Authorization' :  auth,
+    },
+    form: req.body,
+  }, function(err, res2, body) {
+    xml2js.parseString(body, function(err, root) {
+      if (err || root.rep.$.sts !== 'OK')
+        return res.send(500, 'error');
+      root.rep.doc[0].sents[0].sent.map(function(sent) {
+        var parse = sent.parse[0]._;
+        console.log('parse', parse);
+      });
+      res.render('index',{'xml':xmlescape(body), 'text':req.body.txt});
+    });
+  });
+});
+
+
+//=========================================================================MY CODE=====================================================================================
+// render index page
+app.get('/test', function(req, res){
+    res.render('index');
+});
+
+app.post('/test', function(req, res){
+
   var parts = url.parse(service_url);
 
   // create the request options from our form to POST to Watson
@@ -89,7 +122,14 @@ app.post('/', function(req, res){
     });
 
     result.on('end', function() {
-      return res.render('index',{'xml':xmlescape(resp_string), 'text':req.body.txt})
+      console.log("=========================================================================================================================");
+      console.log(resp_string);
+      console.log("=========================================================================================================================");
+      console.log(xmlescape(resp_string));
+      console.log("=========================================================================================================================");
+      //return res.send(resp_string);
+      return res.send(xmlescape(resp_string));
+      //return res.render('index',{'xml':xmlescape(resp_string), 'text':req.body.txt})
     })
 
   });
@@ -102,6 +142,15 @@ app.post('/', function(req, res){
   watson_req.write(querystring.stringify(req.body));
   watson_req.end();
 });
+
+
+
+
+
+
+
+//=========================================================================MY CODE=====================================================================================
+
 
 
 // The IP address of the Cloud Foundry DEA (Droplet Execution Agent) that hosts this application:

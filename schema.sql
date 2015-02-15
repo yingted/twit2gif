@@ -1,17 +1,19 @@
-CREATE TABLE movies(
+CREATE TABLE IF NOT EXISTS movies(
 	video_path TEXT NOT NULL,
 	subtitle_path TEXT NOT NULL
 );
 -- We need custom pysqlite adapter and converter for datetime.time
-CREATE TABLE subtitles(
-	FOREIGN KEY(movie) REFERENCES movies(rowid),
+CREATE TABLE IF NOT EXISTS subtitles(
 	start_time TIME NOT NULL,
 	end_time TIME NOT NULL,
 	quote TEXT NOT NULL,
-	gif_path TEXT
+	gif_path TEXT,
+	movie INTEGER,
+	FOREIGN KEY(movie) REFERENCES movies(rowid)
 );
-CREATE TABLE sentences(
-	FOREIGN KEY(subtitle) REFERENCES subtitles(rowid),
-	entities TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS sentences(
+	entities TEXT NOT NULL,
+	subtitle INTEGER,
+	FOREIGN KEY(subtitle) REFERENCES subtitles(rowid)
 );
-CREATE INDEX sentences_entities_index ON sentences(entities);
+CREATE INDEX IF NOT EXISTS sentences_entities_index ON sentences(entities);
