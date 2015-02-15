@@ -39,7 +39,7 @@ class Server(object):
 		if res:
 			subtitle, quote = res[0]
 			ret['quote'] = quote
-			ret['url'] = cherrypy.url('/render.gif?subtitle=%d' % subtitle)
+			ret['url'] = cherrypy.url('/render/%d.gif' % subtitle)
 		return ret
 	@cherrypy.expose
 	@cherrypy.tools.response_headers(headers=[('Content-Type', 'image/gif')])
@@ -75,7 +75,7 @@ class Server(object):
 						os.path.abspath(video_path),
 						gif_f.name,
 						util.srt_to_ffmpeg_time(start_time),
-						util.srt_to_ffmpeg_time(duration_time),
+						util.srt_to_ffmpeg_time(end_time - start_time),
 					))
 			gif_f.seek(0)
 			return gif_f.read()
