@@ -4,6 +4,7 @@ import cherrypy_cors
 import importer
 import util
 import os
+import urllib
 import tempfile
 import flock
 import subprocess
@@ -40,13 +41,13 @@ class Server(object):
 			subtitle, quote = res[0]
 			ret['quote'] = quote
                         shortener = pyshorteners.shorteners.Shortener('TinyurlShortener')
-                        temp_url = cherrypy.url('/render/%d.gif' % subtitle)
+                        temp_url = cherrypy.url('/render/%d.gif' % subtitle, '?quote=' + urllib.quote(text.encode('utf-8')))
 			#print 'shorten', temp_url
 			ret['url'] = shortener.short(temp_url)
 		return ret
 	@cherrypy.expose
 	@cherrypy.tools.response_headers(headers=[('Content-Type', 'image/gif')])
-	def render(self, gif):
+	def render(self, gif, text=''):
 		if not gif.endswith('.gif'):
 			raise cherrypy.NotFound()
 		subtitle = int(gif[:-4])
@@ -73,13 +74,19 @@ class Server(object):
 							break
 						else:
 							raise cherrypy.NotFound()
-					subprocess.check_call((
-						'./convert.sh',
-						os.path.abspath(video_path),
-						gif_f.name,
-						util.srt_to_ffmpeg_time(start_time),
-						util.srt_to_ffmpeg_time(end_time - start_time),
-					))
+					with tempfile.NamedTemporaryFile(suffix='.srt', prefix='sub_', dir=self.gif_dir) as srt_f:
+						time_diff = end_time - start_time
+						srt_item = pysrt.SubRipItem(index=1, start=pysrt.srttime.SubRipTime(), end=(time_diff + pysrt.srttime.SupRipTime(0,0,1,0)), text=text)
+						srt_file = pysrt.SubRipFile(items=[srt_item], path=srt_f.name)
+						srt_file.save()
+						subprocess.check_call((
+							'./convert.sh',
+							os.path.abspath(video_path),
+							gif_f.name,
+							srt_f.name,
+							util.srt_to_ffmpeg_time(start_time),
+							util.srt_to_ffmpeg_time(time_diff),
+						))
 			gif_f.seek(0)
 			return gif_f.read()
 	#render._cp_config = {
