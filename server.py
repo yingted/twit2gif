@@ -7,7 +7,7 @@ import os
 import tempfile
 import flock
 import subprocess
-import pyshorteners
+import pyshorteners.shorteners
 
 class Server(object):
 	gif_dir = 'rendered_gifs/'
@@ -16,7 +16,6 @@ class Server(object):
 	@cherrypy.tools.json_out()
 	@cherrypy.tools.json_in(force=False)
 	def query(self, text=''):
-		print repr(text)
 		paragraph = util.get_paragraph_entities([text])[0]
 		with importer.cursor() as c:
 			c.execute('CREATE TEMP TABLE query_sentences(query_entities TEXT NOT NULL UNIQUE)')
@@ -40,8 +39,9 @@ class Server(object):
 		if res:
 			subtitle, quote = res[0]
 			ret['quote'] = quote
-                        shortener = Shortener('GoogleShortener')
+                        shortener = pyshorteners.shorteners.Shortener('TinyurlShortener')
                         temp_url = cherrypy.url('/render/%d.gif' % subtitle)
+			#print 'shorten', temp_url
 			ret['url'] = shortener.short(temp_url)
 		return ret
 	@cherrypy.expose

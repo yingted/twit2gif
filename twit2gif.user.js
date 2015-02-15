@@ -9,8 +9,9 @@
 // ==/UserScript==
 
 var tweet_ui = $('.tweet-box-extras');
-tweet_ui.append('<input class="btn btn-default" type="button" value="gifit">').click(function(){
-    var sentence = $(this).parents('.tweet-form').find('.tweet-box').text();
+tweet_ui.append('<input class="btn btn-default" type="button" value="gifit">').click(function() {
+    var tweet_box = $(this).parents('.tweet-form').find('.tweet-box')
+    var sentence = tweet_box.text();
     GM_xmlhttpRequest({
       method: 'POST',
       url: 'http://52.0.224.239:8080/query',
@@ -23,8 +24,10 @@ tweet_ui.append('<input class="btn btn-default" type="button" value="gifit">').c
       onload: function(response) {
         var text = response.responseText;
         if (response.responseText) {
-          console.log('data: ' + response.responseText);
+            var json_obj = JSON.parse(response.responseText);
+            tweet_box.append(json_obj.url);
         }
       }
     });
-}); // vim: ts=4:sw=4:et
+});
+
