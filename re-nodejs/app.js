@@ -12,6 +12,7 @@ var querystring = require('querystring');
 var xmlescape = require('xml-escape');
 var request = require('request').forever();
 var xml2js = require('xml2js');
+var utils = require('utils');
 
 // setup middleware
 var app = express();
@@ -68,6 +69,7 @@ app.get('/', function(req, res){
 
 // Handle the form POST containing the text to identify with Watson and reply with the language
 app.post('/', function(req, res){
+  console.log(req.body);
 
   request.post({
     url: service_url,
@@ -78,15 +80,17 @@ app.post('/', function(req, res){
     form: req.body,
   }, function(err, res2, body) {
     xml2js.parseString(body, function(err, root) {
-      if (err || root.rep.$.sts !== 'OK')
-        return res.send(500, 'error');
+      if (err )
+        return res.send(500, err);
       root.rep.doc[0].sents[0].sent.map(function(sent) {
         var parse = sent.parse[0]._;
         console.log('parse', parse);
-      });
+        console.log(utils.parseType(parse));
+      }); 
       res.render('index',{'xml':xmlescape(body), 'text':req.body.txt});
     });
   });
+
 });
 
 
@@ -142,10 +146,6 @@ app.post('/test', function(req, res){
   watson_req.write(querystring.stringify(req.body));
   watson_req.end();
 });
-
-
-
-
 
 
 
