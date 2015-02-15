@@ -11,16 +11,14 @@ import subprocess
 class Server(object):
 	gif_dir = 'rendered_gifs/'
 	@cherrypy.expose
+	@cherrypy_cors.tools.expose()
 	@cherrypy.tools.json_out()
 	@cherrypy.tools.json_in(force=False)
-	def query(self):
-		try:
-			text = cherrypy.request.json
-		except AttributeError:
-			text = cherrypy.request.body.params['text']
+	def query(self, text=''):
+		print repr(text)
 		paragraph = util.get_paragraph_entities([text])[0]
 		with importer.cursor() as c:
-			c.execute('CREATE TEMP TABLE query_sentences(query_entities UNIQUE TEXT NOT NULL)')
+			c.execute('CREATE TEMP TABLE query_sentences(query_entities TEXT NOT NULL UNIQUE)')
 			try:
 				c.executemany('INSERT OR IGNORE INTO query_sentences VALUES (?)', [(sentence,) for sentence in paragraph])
 				res = list(c.execute('''
@@ -28,6 +26,8 @@ class Server(object):
 						FROM query_sentences
 						INNER JOIN sentences
 							ON entities=query_entities
+						INNER JOIN subtitles
+							ON subtitles.rowid=subtitle
 						LIMIT 1
 				'''))
 			finally:
@@ -42,7 +42,6 @@ class Server(object):
 			ret['url'] = cherrypy.url('/render.gif?subtitle=%d' % subtitle)
 		return ret
 	@cherrypy.expose
-	@cherrypy_cors.tools.expose()
 	@cherrypy.tools.response_headers(headers=[('Content-Type', 'image/gif')])
 	def render(self, gif):
 		if not gif.endswith('.gif'):

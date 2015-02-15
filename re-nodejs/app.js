@@ -96,6 +96,7 @@ app.post('/entities', function(req, res){
       if (err)
         return callback(err);
 
+	  console.log('Parsing XML', body);
       xml2js.parseString(body, function(err, root) {
         if (err)
           callback(err);
