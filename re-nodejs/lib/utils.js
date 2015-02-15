@@ -12,6 +12,8 @@ exports.parseType = function(parse){
           var last = ents.pop();
         }
         token = '';
+      }else if(type==="PRP"){
+        token='';
       }else {//anything else
         if(NNP) NNP=false;
         if(type==="CD"){
@@ -20,7 +22,7 @@ exports.parseType = function(parse){
           }
         }
       }
-      ents.push(token + '_' + type);
+      ents.push(token.toLowerCase() + '_' + type);
       
   });
   var join = ents.join(' ')
