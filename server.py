@@ -10,6 +10,7 @@ import flock
 import subprocess
 import pyshorteners.shorteners
 import pysrt
+import hashlib
 
 class Server(object):
 	gif_dir = 'rendered_gifs/'
@@ -56,8 +57,9 @@ class Server(object):
 			os.makedirs(self.gif_dir)
 		except OSError:
 			pass
+		text_hash = hashlib.sha224(text).hexdigest()
 		#with tempfile.NamedTemporaryFile(suffix='.gif', prefix='render_', dir=self.gif_dir, delete=False) as gif_f:
-		with open(os.path.join(self.gif_dir, 'render_%d.gif' % subtitle), 'w+b') as gif_f:
+		with open(os.path.join(self.gif_dir, 'render_%d_%s.gif' % (subtitle, text_hash)), 'w+b') as gif_f:
 			with flock.Flock(gif_f, flock.LOCK_EX):
 				gif_f.seek(0, 2)
 				size = gif_f.tell()
