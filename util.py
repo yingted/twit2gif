@@ -3,6 +3,7 @@ import datetime
 import json
 import requests
 import pysrt
+import os
 
 sqlite3.register_adapter(pysrt.srttime.SubRipTime, str)
 sqlite3.register_converter('TIME', pysrt.srttime.SubRipTime.from_string)
@@ -18,5 +19,13 @@ def sqlite3_connect(*args, **kwargs):
 	return orig_sqlite3_connect(*args, **kwargs)
 sqlite3.connect = sqlite3_connect
 
+BLUEMIX_ROOT = os.getenv('BLUEMIX_ROOT')
+
 def get_paragraph_entities(paragraph):
-	requests.post(BLUEMIX_ENDPOINT, 
+	'''
+	>>> get_paragraph_entities([u'Hello, World!'])
+	[['...']]
+	'''
+	return requests.post(BLUEMIX_ROOT + '/entities', data=json.dumps(paragraph), headers={
+		'Content-Type': 'application/json',
+	}).json()
