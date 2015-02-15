@@ -18,3 +18,6 @@ def get_paragraph_entities(paragraph):
 	return requests.post(BLUEMIX_ROOT + '/entities', data=json.dumps(paragraph), headers={
 		'Content-Type': 'application/json',
 	}).json()
+
+def srt_to_ffmpeg_time(time):
+	return time.to_time().strftime('%H:%M:%S.%f')
