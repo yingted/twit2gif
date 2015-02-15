@@ -1,0 +1,7 @@
+applications:
+- services:
+  - re-service
+  name: re-nodejs-vvcepheia
+  command: node app.js
+  path: .
+  memory: 128M
