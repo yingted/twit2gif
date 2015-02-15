@@ -70,7 +70,7 @@ var auth = 'Basic ' + new Buffer(service_username + ':' + service_password).toSt
 
 // render index page
 app.get('/entities', function(req, res){
-    res.render('index');
+  res.render('index');
 });
 
 // Handle the form POST containing the text to identify with Watson and reply with the language
@@ -83,37 +83,44 @@ app.post('/entities', function(req, res){
   
 
   async.mapLimit(paragraphs, CONCURRENCY, function(paragraph, callback) {
-    request.post({
-      url: service_url,
-      headers: {
-        'X-synctimeout' : '30',
-        'Authorization' :  auth,
-      },
-      form: {
-        txt:paragraph,
-        sid:"ie-en-news"
-      },
-    }, function(err, res2, body) {
-      if (err)
-        return callback(err);
-
-      xml2js.parseString(body, function(err, root) {
+    if (paragraph===''){
+      var empty=[];
+      callback(null, empty);
+    }else{
+      request.post({
+        url: service_url,
+        headers: {
+          'X-synctimeout' : '30',
+          'Authorization' :  auth,
+        },
+        form: {
+          txt:paragraph,
+          sid:"ie-en-news"
+        },
+      }, function(err, res2, body) {
         if (err)
-          callback(err);
-        try {
-          var paragraph_result = [];
-          root.rep.doc[0].sents[0].sent.map(function(sent) {
-            var parse = utils.parseType(sent.parse[0]._);
-            console.log('sentence', parse);
-            var sentence_result = parse;
-            paragraph_result.push(sentence_result);
-          });
-          callback(null, paragraph_result);
-        } catch (err) {
-          callback(err || 'error');
-        }
-      });
-    });
+          return callback(err);
+
+        xml2js.parseString(body, function(err, root) {
+          if (err)
+            callback(err);
+          try {
+            var paragraph_result = [];
+            root.rep.doc[0].sents[0].sent.map(function(sent) {
+              var parse = utils.parseType(sent.parse[0]._);
+              console.log('sentence', parse);
+              var sentence_result = parse;
+              paragraph_result.push(sentence_result);
+            });
+            callback(null, paragraph_result);
+          } catch (err) {
+            callback(err || 'error');
+          }
+        });
+      });  
+
+    }
+    
 
   }, function(err, paragraph_results) {
     if (err)
