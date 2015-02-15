@@ -79,7 +79,7 @@ class Server(object):
 							raise cherrypy.NotFound()
 					with tempfile.NamedTemporaryFile(suffix='.srt', prefix='sub_', dir=self.gif_dir) as srt_f:
 						time_diff = end_time - start_time
-						srt_item = pysrt.SubRipItem(index=1, start=pysrt.srttime.SubRipTime(), end=(time_diff + pysrt.srttime.SupRipTime(0,0,1,0)), text=text)
+						srt_item = pysrt.SubRipItem(index=1, start=pysrt.srttime.SubRipTime(), end=(time_diff + pysrt.srttime.SubRipTime(0,0,1,0)), text=text)
 						srt_file = pysrt.SubRipFile(items=[srt_item], path=srt_f.name)
 						srt_file.save()
 						subprocess.check_call((
