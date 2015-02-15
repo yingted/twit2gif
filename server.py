@@ -31,6 +31,7 @@ class Server(object):
 							ON entities=query_entities
 						INNER JOIN subtitles
 							ON subtitles.rowid=subtitle
+						ORDER BY random()
 						LIMIT 1
 				'''))
 			finally:
