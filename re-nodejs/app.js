@@ -13,12 +13,13 @@ var xmlescape = require('xml-escape');
 var request = require('request').forever();
 var xml2js = require('xml2js');
 var utils = require('utils');
+var async = require('async');
 
 // setup middleware
 var app = express();
 app.use(express.errorHandler());
 app.use(express.urlencoded()); // to support URL-encoded bodies
-app.use(app.router);
+app.use(express.bodyParser());
 
 app.use(express.static(__dirname + '/public')); //setup static public directory
 app.set('view engine', 'jade');
@@ -69,28 +70,51 @@ app.get('/', function(req, res){
 
 // Handle the form POST containing the text to identify with Watson and reply with the language
 app.post('/', function(req, res){
+  //console.log(req);
+  console.log("====================================================REQUEST BODY====================================================");
+
   console.log(req.body);
+  var paragraphs=req.body;
+  
 
-  request.post({
-    url: service_url,
-    headers: {
-      'X-synctimeout' : '30',
-      'Authorization' :  auth,
-    },
-    form: req.body,
-  }, function(err, res2, body) {
-    xml2js.parseString(body, function(err, root) {
-      if (err )
-        return res.send(500, err);
-      root.rep.doc[0].sents[0].sent.map(function(sent) {
-        var parse = sent.parse[0]._;
-        console.log('parse', parse);
-        console.log(utils.parseType(parse));
-      }); 
-      res.render('index',{'xml':xmlescape(body), 'text':req.body.txt});
+  async.mapLimit(paragraphs, 5, function(paragraph, callback) {
+    request.post({
+      url: service_url,
+      headers: {
+        'X-synctimeout' : '30',
+        'Authorization' :  auth,
+      },
+      form: {
+        txt:paragraph,
+        sid:"ie-en-news"
+      },
+    }, function(err, res2, body) {
+      if (err)
+        return callback(err);
+
+      xml2js.parseString(body, function(err, root) {
+        if (err)
+          callback(err);
+        try {
+          var paragraph_result = [];
+          root.rep.doc[0].sents[0].sent.map(function(sent) {
+            var parse = utils.parseType(sent.parse[0]._);
+            console.log('sentence', parse);
+            var sentence_result = parse;
+            paragraph_result.push(sentence_result);
+          });
+          callback(null, paragraph_result);
+        } catch (err) {
+          callback(err || 'error');
+        }
+      });
     });
-  });
 
+  }, function(err, paragraph_results) {
+    if (err)
+      return res.send(500, 'error ' + err);
+    res.send(paragraph_results);
+  });
 });
 
 
